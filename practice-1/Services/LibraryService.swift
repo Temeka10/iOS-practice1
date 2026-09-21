@@ -7,25 +7,26 @@
 
 import Foundation
 
-// SOLID: Interface Segregation & Dependency Inversion
 protocol LibraryServiceProtocol {
     func fetchBooks() -> [Book]
+    func addBook(_ book: Book)
+    func toggleFavorite(for id: UUID)
 }
 
-// SOLID: Liskov Substitution (Можемо підставити Mock замість Real)
 class MockLibraryService: LibraryServiceProtocol {
-    func fetchBooks() -> [Book] {
-        // Використання Builder
-        let book1 = BookBuilder()
-            .setTitle("1984")
-            .setAuthor("Джордж Оруелл")
-            .setStatus(.finished)
-            .build()
-        
-        // Використання Adapter
-        let legacyData = LegacyBookData(name: "Кобзар", writerName: "Тарас Шевченко", isRead: false)
-        let book2 = LegacyBookAdapter.adapt(legacyData)
-        
-        return [book1, book2]
+    // Зберігаємо стан у пам'яті під час роботи застосунку
+    private var books: [Book] = [
+        Book(id: UUID(), title: "1984", author: "Джордж Оруелл", status: .finished),
+        Book(id: UUID(), title: "Кобзар", author: "Тарас Шевченко", status: .unread)
+    ]
+    
+    func fetchBooks() -> [Book] { return books }
+    
+    func addBook(_ book: Book) { books.append(book) }
+    
+    func toggleFavorite(for id: UUID) {
+        if let index = books.firstIndex(where: { $0.id == id }) {
+            books[index].isFavorite.toggle()
+        }
     }
 }

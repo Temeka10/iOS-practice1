@@ -10,19 +10,23 @@ import Combine
 // SOLID: Single Responsibility (Керує лише підготовкою даних для View)
 class BookListViewModel: ObservableObject {
     @Published var books: [Book] = []
-    
-    // Залежимо від абстракції (Dependency Inversion)
     private let service: LibraryServiceProtocol
-    private let sortStrategy: SortStrategy
     
-    init(service: LibraryServiceProtocol, sortStrategy: SortStrategy) {
+    init(service: LibraryServiceProtocol) {
         self.service = service
-        self.sortStrategy = sortStrategy
     }
     
     func loadBooks() {
-        let fetchedBooks = service.fetchBooks()
-        // Використання патерну Strategy
-        self.books = sortStrategy.sort(fetchedBooks)
+        self.books = service.fetchBooks()
+    }
+    
+    func addBook(_ book: Book) {
+        service.addBook(book)
+        loadBooks() // Оновлюємо список
+    }
+    
+    func toggleFavorite(for bookId: UUID) {
+        service.toggleFavorite(for: bookId)
+        loadBooks()
     }
 }

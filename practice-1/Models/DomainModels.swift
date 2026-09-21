@@ -7,16 +7,20 @@
 
 import Foundation
 
-enum ReadingStatus: String {
+import Foundation
+
+enum ReadingStatus: String, CaseIterable, Hashable {
     case unread = "Не прочитано"
     case reading = "Читаю"
     case finished = "Прочитано"
 }
 
-struct Book: Identifiable {
+// Додали Hashable та isFavorite (для анімації)
+struct Book: Identifiable, Hashable {
     let id: UUID
-    let title: String
-    let author: String
+    var title: String
+    var author: String
     var status: ReadingStatus
     var publishedYear: Int?
+    var isFavorite: Bool = false
 }

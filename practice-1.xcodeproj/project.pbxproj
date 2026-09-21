@@ -35,6 +35,7 @@
 		044954E830612D1F00E8DF9E = {
 			isa = PBXGroup;
 			children = (
+				044955453061B1A800E8DF9E /* docs */,
 				0449550E3061995E00E8DF9E /* README.md */,
 				0449552030619DE000E8DF9E /* practice-1 */,
 				044954F230612D1F00E8DF9E /* Products */,
@@ -47,6 +48,13 @@
 				044954F130612D1F00E8DF9E /* practice-1.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		044955453061B1A800E8DF9E /* docs */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

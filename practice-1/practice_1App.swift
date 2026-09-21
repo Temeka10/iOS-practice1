@@ -6,18 +6,20 @@
 //
 
 import SwiftUI
-
+import Combine
 @main
 struct practice_1App: App {
+    // Створюємо глобальний роутер
+    @StateObject private var router = AppRouter()
+    
     var body: some Scene {
         WindowGroup {
-            // Передаємо залежності ззовні (Dependency Injection)
             BookListView(
                 viewModel: BookListViewModel(
-                    service: MockLibraryService(),
-                    sortStrategy: TitleSortStrategy()
+                    service: MockLibraryService()
                 )
             )
+            .environmentObject(router) // Впроваджуємо роутер у SwiftUI Environment
         }
     }
 }
