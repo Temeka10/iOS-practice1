@@ -16,7 +16,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		044954F330612D1F00E8DF9E /* practice-1 */ = {
+		0449552030619DE000E8DF9E /* practice-1 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "practice-1";
 			sourceTree = "<group>";
@@ -36,7 +36,7 @@
 			isa = PBXGroup;
 			children = (
 				0449550E3061995E00E8DF9E /* README.md */,
-				044954F330612D1F00E8DF9E /* practice-1 */,
+				0449552030619DE000E8DF9E /* practice-1 */,
 				044954F230612D1F00E8DF9E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -63,7 +63,7 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				044954F330612D1F00E8DF9E /* practice-1 */,
+				0449552030619DE000E8DF9E /* practice-1 */,
 			);
 			name = "practice-1";
 			productName = "practice-1";
