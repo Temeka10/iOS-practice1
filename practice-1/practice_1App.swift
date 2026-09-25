@@ -16,7 +16,8 @@ struct practice_1App: App {
         WindowGroup {
             BookListView(
                 viewModel: BookListViewModel(
-                    service: MockLibraryService()
+                    service: RemoteLibraryService()
+//                     service: MockFailingLibraryService()
                 )
             )
             .environmentObject(router) // Впроваджуємо роутер у SwiftUI Environment

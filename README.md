@@ -1,23 +1,26 @@
-# Практична робота 3: Навігація та Сценарії
+# ## Практична робота 4: Мережевий шар (Networking)
 
-### Карта навігації
-**BookListView (Головний екран)**
-   - `NavigationStack` зі списком усіх книг.
-   - ➡️ *Дія:* Тап на книгу -> Push-перехід -> `BookDetailView`   
-   - ➡️ *Дія:* Тап на "+" -> Modal (Sheet) -> `AddBookView`
-[Список](/Users/mac/Desktop/ios_kpi/practice-1/docs/list.png)
-[](docs/list.png)
-**BookDetailView (Екран деталей)**
-   - Показує повну інформацію про обрану сутність.
-   - Має кастомну пружинну (spring) анімацію на кнопці "Додати в улюблені", яка змінює масштаб (scale) і колір. Дані оновлюються на попередньому екрані.
-   - ⬅️ *Дія:* Кнопка "Back" -> Повернення до списку.
-[Деталі](/Users/mac/Desktop/ios_kpi/practice-1/docs/detail.png)
-**AddBookView (Створення)**
-   - Форма для введення даних (Title, Author). Клавіатура не перекриває поля завдяки `Form`.
-   - ⬅️ *Дія:* Зберегти/Скасувати -> Закриває модальне вікно та оновлює головний список.
-[Додавання](/Users/mac/Desktop/ios_kpi/practice-1/docs/Add.png)
-### Архітектура навігації
-Реалізовано патерн **Router (Coordinator)** за допомогою класу `AppRouter : ObservableObject`. 
-- `NavigationStack(path: $router.path)` керує Push-переходами (через Enum `Route`).
-- Властивість `@Published var activeSheet: Sheet?` централізовано керує модальними вікнами.
-- Передача даних працює через `Binding`/колбеки та оновлення стану у загальному сервісі (збереження в пам'яті).
+### Джерело даних (API)
+У проєкті використано відкрите API **Open Library**.
+- **Базова адреса:** `https://openlibrary.org`
+- **Endpoint:** `/search.json`
+- **Параметри:** `q=ios+development` (пошук), `limit=10` (кількість).
+- **Формат:** JSON. Відповідь містить масив об'єктів `docs`. Парсинг виконується за допомогою `Decodable` (DTO моделі `OpenLibraryResponse`, `OpenLibraryBook`).
+- **Авторизація:** Не вимагається (відкрите API).
+
+### Мережевий компонент та Архітектура
+Мережевий шар відокремлено за допомогою патерну Dependency Injection.
+- Використовується нативний `URLSession` та сучасний concurrency (`async/await`).
+- Сервіс `RemoteLibraryService` імплементує протокол `LibraryServiceProtocol`.
+- Усі мережеві виклики відв'язані від View. ViewModel обробляє стани (`.loading`, `.success`, `.error`, `.empty`) і гарантує оновлення UI на `@MainActor` (головному потоці).
+
+### Обробка відмов
+Створено спеціальний `enum NetworkError : LocalizedError` для типізації відмов:
+1. Некоректний URL (`invalidURL`)
+2. Транспортна помилка — немає інтернету (`transportError`)
+3. Невдалий HTTP-статус, наприклад 404 або 500 (`invalidResponse(Int)`)
+4. Помилка парсингу JSON (`decodingError`)
+
+### Як перевірити негативні сценарії:
+У файлі `practice_1App.swift` можна передати `MockFailingLibraryService()` замість `RemoteLibraryService()` у ViewModel. 
+Цей Mock-сервіс керовано викидає 500-ту помилку сервера (HTTP Status Error) з затримкою в 1 секунду. При цьому на екрані відобразиться користувацьке повідомлення про помилку та кнопка "Повторити запит".

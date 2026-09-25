@@ -7,26 +7,58 @@
 
 import Foundation
 import Combine
-// SOLID: Single Responsibility (Керує лише підготовкою даних для View)
+
+// Стани нашого екрана
+enum ViewState {
+    case idle
+    case loading
+    case success
+    case empty
+    case error(String)
+}
+
+@MainActor // Оновлення UI завжди на головному потоці
 class BookListViewModel: ObservableObject {
     @Published var books: [Book] = []
-    private let service: LibraryServiceProtocol
+    @Published var state: ViewState = .idle
     
-    init(service: LibraryServiceProtocol) {
+    private let service: LibraryServiceProtocol
+    private let sortStrategy: SortStrategy
+    
+    init(service: LibraryServiceProtocol, sortStrategy: SortStrategy = TitleSortStrategy()) {
         self.service = service
+        self.sortStrategy = sortStrategy
     }
     
     func loadBooks() {
-        self.books = service.fetchBooks()
+        state = .loading // Показуємо лоадер
+        
+        // Запускаємо асинхронну задачу
+        Task {
+            do {
+                let fetchedBooks = try await service.fetchBooks()
+                
+                if fetchedBooks.isEmpty {
+                    self.state = .empty
+                } else {
+                    self.books = sortStrategy.sort(fetchedBooks)
+                    self.state = .success
+                }
+            } catch {
+                self.state = .error(error.localizedDescription)
+            }
+        }
     }
     
     func addBook(_ book: Book) {
         service.addBook(book)
-        loadBooks() // Оновлюємо список
+        self.books.append(book)
     }
     
     func toggleFavorite(for bookId: UUID) {
         service.toggleFavorite(for: bookId)
-        loadBooks()
+        if let index = books.firstIndex(where: { $0.id == bookId }) {
+            books[index].isFavorite.toggle()
+        }
     }
 }
